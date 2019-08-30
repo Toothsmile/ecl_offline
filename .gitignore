@@ -1,0 +1,15 @@
+
+*.o
+*.gch
+*.pyc
+.project
+.settings
+.swp
+.~lock.*
+Testing/
+Packages/*
+build/*
+build_*/
+EKF-build*/
+EKF/build/*
+data/*
