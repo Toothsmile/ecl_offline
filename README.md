@@ -1,3 +1,29 @@
+## to use ecl_offline
+```
+cd EKF
+mkdir Build/
+cd Build/
+cmake ..
+make
+
+./myekf2
+
+```
+## use other version ecl
+1.
+```
+cd EKF
+cp CMakeLists.txt Myekf2.cpp myekf2.h ${OTHER_VERSION_ECL}/
+
+```
+tips:
+ dont forget copy matrix to root directory${OTHER_VERSION_ECL}
+
+## Prerequisites
+origin from https://github.com/AbnerCSZ/EKF2_offline.git
+
+
+
 # ECL
 
 **Very lightweight Estimation & Control Library.**
@@ -7,6 +33,8 @@
 This library solves the estimation & control problems of a number of robots and drones. It accepts GPS, vision and inertial sensor inputs. It is extremely lightweight and efficient and yet has the rugged field-proven performance.
 
 The library is BSD 3-clause licensed.
+
+
 
 ## EKF Documentation
 
