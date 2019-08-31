@@ -206,7 +206,7 @@ struct auxVelSample {
 
 struct parameters {
 	// measurement source control
-	int32_t fusion_mode{MASK_USE_GPS};		///< bitmasked integer that selects which aiding sources will be used
+        int32_t fusion_mode{MASK_USE_EVPOS+MASK_USE_EVYAW};		///< bitmasked integer that selects which aiding sources will be used
 	int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
 	int32_t sensor_interval_min_ms{20};		///< minimum time of arrival difference between non IMU sensor updates. Sets the size of the observation buffers. (mSec)
 
@@ -286,6 +286,9 @@ struct parameters {
 
 	// vision position fusion
 	float ev_innov_gate{5.0f};		///< vision estimator fusion innovation consistency gate size (STD)
+        float ev_pos_noise{0.5f};               ///< by sjj extel vision pose noise
+        float ev_ang_noise{0.3};                ///< by sjj extel angle pose noise (not correct)
+
 
 	// optical flow fusion
 	float flow_noise{0.15f};		///< observation noise for optical flow LOS rate measurements (rad/sec)

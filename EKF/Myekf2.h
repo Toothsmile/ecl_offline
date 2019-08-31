@@ -35,7 +35,9 @@ public:
 
 	void print_status();
 
-	void exit() { _task_should_exit = true; }
+    void exit() { _task_should_exit = true;}
+
+    const Vector3f get_vel_body_wind();
 
 private:
 	static constexpr float _dt_max = 0.02;
@@ -55,14 +57,14 @@ private:
 	float _mag_data_sum[3] = {0};			// summed magnetometer readings (Ga)
 	uint64_t _mag_time_sum_ms = 0;		// summed magnetoemter time stamps (msec)
 	// uint64_t _mag_time_sum_ms;		// summed magnetoemter time stamps (msec)
-	uint8_t _mag_sample_count = 0;		// number of magnetometer measurements summed
+    int _mag_sample_count = 0;		// number of magnetometer measurements summed
 	uint32_t _mag_time_ms_last_used = 0;	// time stamp in msec of the last averaged magnetometer measurement used by the EKF
 
 	// Used to down sample barometer data
 	matrix::Vector2f baro_from_API;
 	float _balt_data_sum;			// summed barometric altitude readings (m)
 	uint64_t _balt_time_sum_ms;		// summed barometric altitude time stamps (msec)
-	uint8_t _balt_sample_count = 0;		// number of barometric altitude measurements summed
+    int _balt_sample_count = 0;		// number of barometric altitude measurements summed
 	uint32_t _balt_time_ms_last_used = 0;	// time stamp in msec of the last averaged barometric altitude measurement used by the EKF
 
 	bool	_prev_landed = true;	// landed status from the previous frame
