@@ -1,5 +1,5 @@
 ## to use ecl_offline
-(1) console
+### (1) console
 ```
 cd EKF
 mkdir Build/
@@ -10,7 +10,7 @@ cd ..
 ./build/myekf2
 
 ```
-(2)IDE(qtcreator)
+### (2)IDE(qtcreator)
 open project /ecl/EKF/CMakeLists
 then you can debug it by set breakpoint
 
