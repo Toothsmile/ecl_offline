@@ -1,16 +1,20 @@
 ## to use ecl_offline
+(1) console
 ```
 cd EKF
 mkdir Build/
 cd Build/
 cmake ..
 make
-
-./myekf2
+cd ..
+./build/myekf2
 
 ```
+(2)IDE(qtcreator)
+open project /ecl/EKF/CMakeLists
+then you can debug it by set breakpoint
+
 ## use other version ecl
-1.
 ```
 cd EKF
 cp CMakeLists.txt Myekf2.cpp myekf2.h ${OTHER_VERSION_ECL}/
@@ -21,6 +25,12 @@ tips:
 
 ## Prerequisites
 origin from https://github.com/AbnerCSZ/EKF2_offline.git
+
+
+# NOTE
+2019.8.31 add test data from ulog2csv ulgfile,do some modify ,see /ecl/data/erk_vision
+
+
 
 
 
