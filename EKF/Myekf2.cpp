@@ -89,7 +89,7 @@ void Ekf2::task_main()
 //		float temp;
 //		imuread >> temp;
 
-        printf("time now: %ld\n", now);
+        ECL_INFO("time now: %ld\n", now);
         //gyro_integral_dt = now - last_IMUtime;	//us
         //gyro_integral_dt /= 1.e6f;	//s
         //accelerometer_integral_dt = now - last_IMUtime;
@@ -99,7 +99,7 @@ void Ekf2::task_main()
 		float gyro_integral[3],gyro_rad[3];
         imuread >> gyro_rad[0];	imuread >> gyro_rad[1];	imuread >> gyro_rad[2];imuread>>gyro_integral_dt;
         gyro_integral_dt /= 1.e6f;	//s
-        printf("[gyro]:%f,%f,%f,%f s ", gyro_rad[0], gyro_rad[1], gyro_rad[2],gyro_integral_dt);
+        ECL_DEBUG("[gyro]:%f,%f,%f,%f s ", gyro_rad[0], gyro_rad[1], gyro_rad[2],gyro_integral_dt);
 
 		gyro_integral[0] = gyro_rad[0] * gyro_integral_dt;
 		gyro_integral[1] = gyro_rad[1] * gyro_integral_dt;
@@ -108,7 +108,7 @@ void Ekf2::task_main()
 		float accel_integral[3],accelerometer_m_s2[3];
         imuread >> accelerometer_m_s2[0];	imuread >> accelerometer_m_s2[1];	imuread >> accelerometer_m_s2[2];imuread>>accelerometer_integral_dt;
         accelerometer_integral_dt/=1.e6;  //s
-        printf("[acceler] accelerometer_m_s2:%f,%f,%f,%f s\n", accelerometer_m_s2[0], accelerometer_m_s2[1], accelerometer_m_s2[2],accelerometer_integral_dt);
+        ECL_DEBUG("[acceler] accelerometer_m_s2:%f,%f,%f,%f s\n", accelerometer_m_s2[0], accelerometer_m_s2[1], accelerometer_m_s2[2],accelerometer_integral_dt);
 		accel_integral[0] = accelerometer_m_s2[0] * accelerometer_integral_dt;
 		accel_integral[1] = accelerometer_m_s2[1] * accelerometer_integral_dt;
 		accel_integral[2] = accelerometer_m_s2[2] * accelerometer_integral_dt;
@@ -151,7 +151,7 @@ void Ekf2::task_main()
 				float mag_sample_count_inv = 1.0f / (float)_mag_sample_count;
 				float mag_data_avg_ga[3] = {_mag_data_sum[0] *mag_sample_count_inv, _mag_data_sum[1] *mag_sample_count_inv, _mag_data_sum[2] *mag_sample_count_inv};
 				_ekf.setMagData(1000 * (uint64_t)mag_time_ms, mag_data_avg_ga);
-                printf("[mag]: %d %f %d %f %f %f\n",now,mag_time_us_read,mag_time_ms,
+                printf("[mag]: %d %d %d %f %f %f\n",now,mag_time_us_read,mag_time_ms,
                         _mag_data_sum[0],_mag_data_sum[1],_mag_data_sum[2]);
 				_mag_time_ms_last_used = mag_time_ms;
 				_mag_time_sum_ms = 0;
@@ -195,7 +195,7 @@ void Ekf2::task_main()
 
 				if (balt_time_ms - _balt_time_ms_last_used > (uint32_t)_params->sensor_interval_min_ms) {
 					float balt_data_avg = _balt_data_sum / (float)_balt_sample_count;
-                printf("[baro]: %f %f %d %f\n",now,baro_time_us_read,balt_time_ms,
+                ECL_DEBUG("[baro]: %f %f %d %f\n",now,baro_time_us_read,balt_time_ms,
                         balt_data_avg);
                 _ekf.set_air_density(rho);
 
@@ -262,7 +262,7 @@ void Ekf2::task_main()
             gps_msg.lat = lat;
             gps_msg.lon = lon;
             gps_msg.alt = alt;
-            printf("time now: %ld\n", now);
+            ECL_DEBUG("time now: %ld\n", now);
 
             gps_msg.fix_type = fix_type;
             gps_msg.eph = eph;
@@ -274,7 +274,7 @@ void Ekf2::task_main()
             gps_msg.vel_ned[2] = vel_ned[2];
             gps_msg.vel_ned_valid = vel_valid;
             gps_msg.nsats = nsats;
-            printf("[gps]: %ld, %d, %d, %d, %d\n",gps_msg.time_usec,gps_msg.lat,gps_msg.lon,gps_msg.alt,gps_msg.fix_type);
+            ECL_DEBUG("[gps]: time %ld, %d, %d, %d, %d\n",gps_msg.time_usec,gps_msg.lat,gps_msg.lon,gps_msg.alt,gps_msg.fix_type);
 			//TODO add gdop to gps topic
 			gps_msg.gdop = 0.0f;
 
@@ -335,7 +335,7 @@ void Ekf2::task_main()
                 // use timestamp from external computer, clocks are synchronized when using MAVROS
                 _ekf.setExtVisionData(evp_updated ? evp_time_us : evq_time_us, &ev_data);
             }
-            printf("[EV]now:%ld,ev_time %ld,%f,%f,%f\n",now,evp_updated ? evp_time_us : evq_time_us,posNED(0),posNED(1),posNED(2));
+            ECL_DEBUG("[EV]now:%ld,ev_time %ld,posNED %f,%f,%f\n",now,evp_updated ? evp_time_us : evq_time_us,posNED(0),posNED(1),posNED(2));
         }
 
 
@@ -348,7 +348,7 @@ void Ekf2::task_main()
 
 			float velocity[3];
 			_ekf.get_velocity(velocity);
-			//printf("velocity: %lf,%lf,%lf\n", velocity[0], velocity[1], velocity[2]);
+            ECL_INFO("velocity: %lf,%lf,%lf\n", velocity[0], velocity[1], velocity[2]);
 
 			float gyro_rad[3];
 
@@ -369,7 +369,7 @@ void Ekf2::task_main()
 				// Local Position NED
 				float position[3];
 				_ekf.get_position(position);
-				//printf("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
+                ECL_INFO("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
 				position_estimator<< now/1.e6f <<" "<<position[0] <<" "<<position[1] - 0.278398 <<" "
 				<<-position[2] + 0.0849676 <<" "<<std::endl;
 				// Attitude quaternion
@@ -422,13 +422,13 @@ void Ekf2::task_main()
 			Vector3f pos_var, vel_var;
 			_ekf.get_pos_var(pos_var);
 			_ekf.get_vel_var(vel_var);
-            printf("pos_var: %lf,%lf,%lf\n", pos_var(0), pos_var(1), pos_var(2) );
-            printf("vel_var: %lf,%lf,%lf\n", vel_var(0), vel_var(1), vel_var(2) );
+            ECL_INFO("pos_var: %lf,%lf,%lf\n", pos_var(0), pos_var(1), pos_var(2) );
+            ECL_INFO("vel_var: %lf,%lf,%lf\n", vel_var(0), vel_var(1), vel_var(2) );
 
 		} 
 
 	}
-	printf("end\n");
+    ECL_INFO("end\n");
 
 
 }
@@ -456,7 +456,7 @@ const Vector3f Ekf2::get_vel_body_wind()
 
 int main(int argc, char *argv[])
 {
-	printf("begin\n");
+    ECL_INFO("begin\n");
 	bReadGPS = true;
 	Ekf2* _ekf2 = new Ekf2();
     _ekf2->print_status();
