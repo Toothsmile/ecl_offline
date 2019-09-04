@@ -31,8 +31,8 @@ dimianzhan.com http://shequ.dimianzhan.com/articles/586/ecl-offline-li-xian-tiao
 CSDN https://blog.csdn.net/qq_39600809/article/details/100187673
 
 # NOTE
-2019.8.31 add test data from ulog2csv ulgfile,do some modify ,see /ecl/data/erk_vision
-2019.9.04 add opuput ecl log data(local_position，global_position,quat,sensor_bias,innovation,etal),see /ecl/EKF/myekf.cpp
+### 2019.8.31 add test data from ulog2csv ulgfile,do some modify ,see /ecl/data/erk_vision
+### 2019.9.04 add opuput ecl log data(local_position，global_position,quat,sensor_bias,innovation,etal),see /ecl/EKF/myekf.cpp
 
 
 
