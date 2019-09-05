@@ -39,7 +39,7 @@ std::ofstream vehicle_attitude_out("../data/rtk_vision/vechile_attitude.txt");
 std::ofstream vehicle_local_out("../data/rtk_vision/vechile_local_position.txt");
 std::ofstream vehicle_global_out("../data/rtk_vision/vechile_global_position.txt");
 std::ofstream sensor_bias_out("../data/rtk_vision/sensor_bias.txt");
-std::ofstream estimate_status_out("../data/rtk_vision/ekf_status.txt");
+std::ofstream estimate_status_out("../data/rtk_vision/estimate_status.txt");
 std::ofstream ekf_innovations_out("../data/rtk_vision/ekf_innovations.txt");
 std::ofstream euler_estimator("../results/euler_estimator.txt");
 std::ofstream position_estimator("../results/position_estimator.txt");
@@ -405,18 +405,18 @@ void Ekf2::task_main()
                 att.yawspeed = gyro_rad[2] - gyro_bias[2];
 
                 // publish vehicle attitude
-                std::stringstream attitude_strs;
+                //std::stringstream attitude_strs;
 
                 //std::string file;
-                attitude_strs<<att.timestamp<<space_str<<att.rollspeed<<space_str
+                vehicle_attitude_out<<att.timestamp<<space_str<<att.rollspeed<<space_str
                             <<att.pitchspeed<<space_str<<att.yawspeed<<space_str
                             <<att.q[0]<<space_str<<att.q[1]<<space_str<<att.q[2]
                             <<att.q[3]<<space_str<<att.delta_q_reset[0]<<space_str
                             <<att.delta_q_reset[1]<<space_str<<att.delta_q_reset[2]
-                            <<space_str<<att.delta_q_reset[3]<<space_str<<att.quat_reset_counter;
+                            <<space_str<<att.delta_q_reset[3]<<space_str<<att.quat_reset_counter<<std::endl;
                 //printf((attitude_strs.str()));
 
-                vehicle_attitude_out<<attitude_strs.str()<<std::endl;
+                //vehicle_attitude_out<<attitude_strs.str()<<std::endl;
 
             }
 
@@ -517,7 +517,7 @@ void Ekf2::task_main()
             }
             //发布vehicle_local_position数据
             std::stringstream lposStream;//i need a printf function need neednnn
-            lposStream<<lpos.timestamp<<space_str<<lpos.ref_timestamp<<space_str<<lpos.ref_lat<<space_str
+            vehicle_local_out<<lpos.timestamp<<space_str<<lpos.ref_timestamp<<space_str<<lpos.ref_lat<<space_str
                      <<lpos.ref_lon<<space_str<<lpos.x<<space_str<<lpos.y<<space_str<<lpos.z<<space_str<<lpos.delta_xy[0]
                     <<space_str<<lpos.delta_xy[1]<<space_str<<lpos.delta_z<<space_str<<lpos.vx<<space_str<<lpos.vy<<space_str
                    <<lpos.z_deriv<<space_str<<lpos.delta_vxy[0]<<space_str<<lpos.delta_vxy[2]<<space_str<<lpos.delta_vz<<space_str
@@ -525,9 +525,9 @@ void Ekf2::task_main()
                  <<lpos.epv<<space_str<<lpos.evh<<space_str<<lpos.evv<<space_str<<lpos.vxy_max<<space_str<<lpos.hagl_min<<space_str<<lpos.hagl_max
                 <<lpos.xy_valid<<space_str<<lpos.z_valid<<space_str<<lpos.v_xy_valid<<space_str<<lpos.v_z_valid<<space_str<<lpos.xy_reset_counter<<space_str
                <<lpos.z_reset_counter<<space_str<<lpos.vxy_reset_counter<<space_str<<lpos.vz_reset_counter<<space_str<<lpos.xy_global<<space_str<<lpos.z_global
-              <<lpos.z_global<<space_str<<lpos.dist_bottom_valid<<space_str;
+              <<lpos.z_global<<space_str<<lpos.dist_bottom_valid<<space_str<<std::endl;
 
-            vehicle_local_out<<lposStream.str()<<std::endl;
+            //vehicle_local_out<<lposStream.str()<<std::endl;
             ECL_INFO("now:%ld,velocity: %f,%f,%f\n", now,velocity[0], velocity[1], velocity[2]);
             ECL_INFO("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
 
@@ -572,13 +572,13 @@ void Ekf2::task_main()
 
                 //_vehicle_global_position_pub.update();
                 //发布vehicle_global_position信息
-                std::stringstream vehicleGlobalPosStream;
-                vehicleGlobalPosStream<<global_pos.timestamp<<space_str<<global_pos.lat<<space_str<<global_pos.lon<<space_str<<global_pos.alt
+                //std::stringstream vehicleGlobalPosStream;
+                vehicle_local_out<<global_pos.timestamp<<space_str<<global_pos.lat<<space_str<<global_pos.lon<<space_str<<global_pos.alt
                                      <<space_str<<global_pos.delta_alt<<space_str<<global_pos.vel_n<<space_str<<global_pos.vel_e<<space_str
                                     <<global_pos.vel_d<<space_str<<global_pos.yaw<<space_str<<global_pos.eph<<space_str<<global_pos.epv<<space_str
                                    <<global_pos.terrain_alt<<space_str<<global_pos.lat_lon_reset_counter<<space_str<<global_pos.alt_reset_counter<<space_str
-                                  <<global_pos.terrain_alt_valid<<space_str<<global_pos.dead_reckoning;
-                vehicle_local_out<<vehicleGlobalPosStream.str()<<std::endl;
+                                  <<global_pos.terrain_alt_valid<<space_str<<global_pos.dead_reckoning<<std::endl;
+                //vehicle_local_out<<vehicleGlobalPosStream.str()<<std::endl;
                 ECL_INFO("now:%ld time :%ld position: %lf,%lf,%lf\n", now,global_pos.timestamp,global_pos.lat, global_pos.lon, global_pos.alt);
 
 
@@ -616,12 +616,12 @@ void Ekf2::task_main()
 //                    orb_publish(ORB_ID(sensor_bias), _sensor_bias_pub, &bias);
 //                }
                 //发布传感器改正数据
-                std::stringstream sensorBiasStream;
-                sensorBiasStream<<bias.timestamp<<space_str<<bias.accel_x<<space_str<<bias.accel_y<<space_str<<bias.accel_z
+                //std::stringstream sensorBiasStream;
+                sensor_bias_out<<bias.timestamp<<space_str<<bias.accel_x<<space_str<<bias.accel_y<<space_str<<bias.accel_z
                                <<bias.gyro_x_bias<<space_str<<bias.gyro_y_bias<<space_str<<bias.gyro_z_bias<<space_str<<bias.accel_x_bias
                               <<space_str<<bias.accel_y_bias<<space_str<<bias.accel_z_bias<<space_str<<bias.mag_x_bias<<space_str<<bias.mag_y_bias
-                             <<space_str<<bias.mag_z_bias;
-                sensor_bias_out<<sensorBiasStream.str()<<std::endl;
+                             <<space_str<<bias.mag_z_bias<<std:endl;
+                //sensor_bias_out<<sensorBiasStream.str()<<std::endl;
                 ECL_INFO("[sensor_bias]now:%ld,time:%ld,gyro:%f %f %f",now,bias.timestamp,bias.accel_x_bias,bias.accel_y,bias.accel_z);
 
 
@@ -661,15 +661,18 @@ void Ekf2::task_main()
             std::stringstream ekfStatusStream;
             std::string states_str=mat2Str(status.states,sizeof(status.states)/sizeof(float));//状态向量
             std::string cov_str=mat2Str(status.covariances,sizeof(status.covariances)/sizeof(float));//状态向量协方差
-            ekfStatusStream<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<status.vibe[0]
+            estimate_status_out<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<status.vibe[0]
                           <<space_str<<status.vibe[1]<<space_str<<status.vibe[2]<<space_str<<cov_str<<space_str<<status.control_mode_flags<<space_str
                          <<status.pos_horiz_accuracy<<space_str<<status.pos_vert_accuracy<<space_str<<status.mag_test_ratio<<space_str<<status.vel_test_ratio
                         <<space_str<<status.pos_test_ratio<<space_str<<status.hgt_test_ratio<<space_str<<status.tas_test_ratio<<space_str<<status.hagl_test_ratio
                        <<space_str<<status.beta_test_ratio<<space_str<<status.time_slip<<space_str<<status.gps_check_fail_flags<<space_str<<status.filter_fault_flags
                       <<space_str<<status.innovation_check_flags<<space_str<<status.solution_status_flags<<space_str<<status.nan_flags<<space_str<<status.health_flags
-                     <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail;
-
-            estimate_status_out<<ekfStatusStream.str()<<std::endl;
+                     <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail<<std::endl;
+            std::cout<<"timestamp"<<status.timestamp<<std::endl;
+            std::cout<<states_str<<std::endl;
+            //ECL_WARN("status.timestamp%d,mag_test_ratio%f，vel_test_ratio%f",status.timestamp,status.mag_test_ratio,status.vel_test_ratio);
+            //ECL_WARN("control_mode_flags%d",status.control_mode_flags);
+            //estimate_status_out<<ekfStatusStream.str()<<std::endl;
 
 
 

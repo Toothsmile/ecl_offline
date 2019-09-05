@@ -11,10 +11,10 @@
 
 #include <ekf.h>
 
-#define ECL_DEBUG(...)     {fprintf(stdout,"[ECL_DEBUG]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}// by sjj
-#define ECL_INFO(...)      {fprintf(stdout,"[ECL_INFO]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}
+#define ECL_DEBUG(...)     //{fprintf(stdout,"[ECL_DEBUG]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}// by sjj
+#define ECL_INFO(...)      //{fprintf(stdout,"[ECL_INFO]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}
 #define ECL_WARN(...)      {fprintf(stdout,"[ECL_WARN]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}
-#define ECL_ERRO(...)      {fprintf(stdout,"[ECL_ERRO]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}
+#define ECL_ERRO(...)      //{fprintf(stdout,"[ECL_ERRO]");fprintf(stdout,__VA_ARGS__);fprintf(stdout,"\n");}
 
 #define PX4_ISFINITE(x) std::isfinite(x) //ISFINITE判断
 

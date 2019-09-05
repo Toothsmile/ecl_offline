@@ -206,7 +206,7 @@ struct auxVelSample {
 
 struct parameters {
 	// measurement source control
-        int32_t fusion_mode{MASK_USE_EVPOS+MASK_USE_EVYAW};		///< bitmasked integer that selects which aiding sources will be used
+        int32_t fusion_mode{MASK_USE_GPS};		///< bitmasked integer that selects which aiding sources will be used
 	int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
 	int32_t sensor_interval_min_ms{20};		///< minimum time of arrival difference between non IMU sensor updates. Sets the size of the observation buffers. (mSec)
 
