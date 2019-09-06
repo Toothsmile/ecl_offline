@@ -206,12 +206,13 @@ struct auxVelSample {
 
 struct parameters {
 	// measurement source control
-        int32_t fusion_mode{MASK_USE_GPS};		///< bitmasked integer that selects which aiding sources will be used
-	int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
+        int32_t fusion_mode{MASK_USE_EVPOS+MASK_USE_DRAG};		///< bitmasked integer that selects which aiding sources will be used
+        int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
 	int32_t sensor_interval_min_ms{20};		///< minimum time of arrival difference between non IMU sensor updates. Sets the size of the observation buffers. (mSec)
 
 	// measurement time delays
-	float min_delay_ms{0.0f};		///< Maximmum time delay of any sensor used to increse buffer length to handle large timing jitter (mSec)
+        float min_delay_ms{0.0f};
+        ///< Maximmum time delay of any sensor used to increse buffer length to handle large timing jitter (mSec)
 	float mag_delay_ms{0.0f};		///< magnetometer measurement delay relative to the IMU (mSec)
 	float baro_delay_ms{0.0f};		///< barometer height measurement delay relative to the IMU (mSec)
 	float gps_delay_ms{110.0f};		///< GPS measurement delay relative to the IMU (mSec)
@@ -286,7 +287,7 @@ struct parameters {
 
 	// vision position fusion
 	float ev_innov_gate{5.0f};		///< vision estimator fusion innovation consistency gate size (STD)
-        float ev_pos_noise{0.5f};               ///< by sjj extel vision pose noise
+        float ev_pos_noise{0.02f};               ///< by sjj extel vision pose noise
         float ev_ang_noise{0.3};                ///< by sjj extel angle pose noise (not correct)
 
 

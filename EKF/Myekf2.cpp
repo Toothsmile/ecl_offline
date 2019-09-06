@@ -29,20 +29,7 @@ std::string mat2Str(float x[],int length){
 
 
 class Ekf2;
-std::ifstream imuread("../data/rtk_vision/sensor_combined_0.txt");
-std::ifstream gpsread("../data/rtk_vision/gps_position_0.txt");
-std::ifstream magread("../data/rtk_vision/magnetometer_0.txt");
-std::ifstream airread("../data/rtk_vision/air_data_0.txt");
-std::ifstream evqread("../data/rtk_vision/vision_attitude_0.txt");
-std::ifstream evpread("../data/rtk_vision/vision_position_0.txt");
-std::ofstream vehicle_attitude_out("../data/rtk_vision/vechile_attitude.txt");
-std::ofstream vehicle_local_out("../data/rtk_vision/vechile_local_position.txt");
-std::ofstream vehicle_global_out("../data/rtk_vision/vechile_global_position.txt");
-std::ofstream sensor_bias_out("../data/rtk_vision/sensor_bias.txt");
-std::ofstream estimate_status_out("../data/rtk_vision/estimate_status.txt");
-std::ofstream ekf_innovations_out("../data/rtk_vision/ekf_innovations.txt");
-std::ofstream euler_estimator("../results/euler_estimator.txt");
-std::ofstream position_estimator("../results/position_estimator.txt");
+
 
 bool bReadGPS=false, bmagread=false, bReadBaro=false,bReadevq=false,bReadevp=false;//是否读取gps,mag,baro,extel vision attitue and posion
 
@@ -73,6 +60,19 @@ void Ekf2::print_status()
 
 void Ekf2::task_main()
 {
+    std::ifstream imuread("../data/test/imu.txt");
+    std::ifstream gpsread("../data/test/gps.txt");
+    std::ifstream magread("../data/test/mag.txt");
+    std::ifstream airread("../data/test/baro.txt");
+    std::ifstream evqread("../data/test/vision_att.txt");
+    std::ifstream evpread("../data/test/vision_pos.txt");
+    std::ofstream vehicle_attitude_out("../data/test/vechile_attitude.txt");
+    std::ofstream vehicle_local_out("../data/test/vechile_local_position.txt");
+    std::ofstream vehicle_global_out("../data/test/vechile_global_position.txt");
+    std::ofstream sensor_bias_out("../data/test/sensor_bias.txt");
+    std::ofstream estimate_status_out("../data/test/estimate_status.txt");
+    std::ofstream ekf_innovations_out("../data/test/ekf_innovations.txt");
+
 	// initialise parameter cache// TODO
 	//updateParams();
 //	std::ifstream imuread("data/imu_data.txt");
@@ -620,7 +620,7 @@ void Ekf2::task_main()
                 sensor_bias_out<<bias.timestamp<<space_str<<bias.accel_x<<space_str<<bias.accel_y<<space_str<<bias.accel_z
                                <<bias.gyro_x_bias<<space_str<<bias.gyro_y_bias<<space_str<<bias.gyro_z_bias<<space_str<<bias.accel_x_bias
                               <<space_str<<bias.accel_y_bias<<space_str<<bias.accel_z_bias<<space_str<<bias.mag_x_bias<<space_str<<bias.mag_y_bias
-                             <<space_str<<bias.mag_z_bias<<std:endl;
+                             <<space_str<<bias.mag_z_bias<<std::endl;
                 //sensor_bias_out<<sensorBiasStream.str()<<std::endl;
                 ECL_INFO("[sensor_bias]now:%ld,time:%ld,gyro:%f %f %f",now,bias.timestamp,bias.accel_x_bias,bias.accel_y,bias.accel_z);
 
@@ -661,7 +661,7 @@ void Ekf2::task_main()
             std::stringstream ekfStatusStream;
             std::string states_str=mat2Str(status.states,sizeof(status.states)/sizeof(float));//状态向量
             std::string cov_str=mat2Str(status.covariances,sizeof(status.covariances)/sizeof(float));//状态向量协方差
-            estimate_status_out<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<status.vibe[0]
+            estimate_status_out<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<space_str<<status.vibe[0]
                           <<space_str<<status.vibe[1]<<space_str<<status.vibe[2]<<space_str<<cov_str<<space_str<<status.control_mode_flags<<space_str
                          <<status.pos_horiz_accuracy<<space_str<<status.pos_vert_accuracy<<space_str<<status.mag_test_ratio<<space_str<<status.vel_test_ratio
                         <<space_str<<status.pos_test_ratio<<space_str<<status.hgt_test_ratio<<space_str<<status.tas_test_ratio<<space_str<<status.hagl_test_ratio
@@ -669,7 +669,15 @@ void Ekf2::task_main()
                       <<space_str<<status.innovation_check_flags<<space_str<<status.solution_status_flags<<space_str<<status.nan_flags<<space_str<<status.health_flags
                      <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail<<std::endl;
             std::cout<<"timestamp"<<status.timestamp<<std::endl;
-            std::cout<<states_str<<std::endl;
+            std::cout<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<status.vibe[0]
+                    <<space_str<<status.vibe[1]<<space_str<<status.vibe[2]<<space_str<<cov_str<<space_str<<status.control_mode_flags<<space_str
+                   <<status.pos_horiz_accuracy<<space_str<<status.pos_vert_accuracy<<space_str<<status.mag_test_ratio<<space_str<<status.vel_test_ratio
+                  <<space_str<<status.pos_test_ratio<<space_str<<status.hgt_test_ratio<<space_str<<status.tas_test_ratio<<space_str<<status.hagl_test_ratio
+                 <<space_str<<status.beta_test_ratio<<space_str<<status.time_slip<<space_str<<status.gps_check_fail_flags<<space_str<<status.filter_fault_flags
+                <<space_str<<status.innovation_check_flags<<space_str<<status.solution_status_flags<<space_str<<status.nan_flags<<space_str<<status.health_flags
+               <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail<<std::endl;
+      std::cout<<"mag"<<status.mag_test_ratio<<std::endl;
+      std::cout<<"state[24]:"<<status.states[23]<<"state_var[24]:"<<status.covariances[23]<<std::endl;
             //ECL_WARN("status.timestamp%d,mag_test_ratio%f，vel_test_ratio%f",status.timestamp,status.mag_test_ratio,status.vel_test_ratio);
             //ECL_WARN("control_mode_flags%d",status.control_mode_flags);
             //estimate_status_out<<ekfStatusStream.str()<<std::endl;
@@ -701,23 +709,23 @@ void Ekf2::task_main()
 
                 _ekf.get_output_tracking_error(&innovations.output_tracking_error[0]);
 
-                std::stringstream ekf_innovations_stream;
+                //std::stringstream ekf_innovations_stream;
                 std::string vel_pos_ino_str=mat2Str(innovations.vel_pos_innov,6);
                 std::string mag_ino_str=mat2Str(innovations.mag_innov,3);
                 std::string mag_ino_var_str=mat2Str(innovations.mag_innov_var,3);
                 std::string vel_pos_var_ino_str=mat2Str(innovations.vel_pos_innov_var,6);
                 std::string output_tra_ero_str=mat2Str(innovations.output_tracking_error,3);
-                ekf_innovations_stream<<innovations.timestamp<<space_str<<vel_pos_ino_str<<space_str<<mag_ino_str
+                ekf_innovations_out<<innovations.timestamp<<space_str<<vel_pos_ino_str<<space_str<<mag_ino_str
                                      <<space_str<<innovations.heading_innov<<space_str<<innovations.airspeed_innov
                                     <<space_str<<innovations.beta_innov<<space_str<<innovations.flow_innov[0]<<space_str
                                    <<innovations.flow_innov[1]<<space_str<<innovations.hagl_innov<<space_str<<vel_pos_var_ino_str<<space_str
                                   <<mag_ino_var_str<<space_str<<innovations.heading_innov_var<<space_str<<innovations.airspeed_innov_var
                                  <<space_str<<innovations.beta_innov_var<<space_str<<innovations.flow_innov_var[0]<<space_str<<innovations.flow_innov_var[1]
-                                <<space_str<<innovations.hagl_innov_var<<space_str<<innovations.output_tracking_error<<space_str<<output_tra_ero_str<<space_str
+                                <<space_str<<innovations.hagl_innov_var<<space_str<<output_tra_ero_str<<space_str
                                <<innovations.drag_innov[0]<<space_str<<innovations.drag_innov[1]<<space_str<<innovations.drag_innov_var[0]<<space_str<<innovations.drag_innov_var[1]
-                              <<space_str<<innovations.aux_vel_innov[0]<<space_str<<innovations.aux_vel_innov[1];
-
-                ekf_innovations_out<<ekf_innovations_stream.str()<<std::endl;
+                              <<space_str<<innovations.aux_vel_innov[0]<<space_str<<innovations.aux_vel_innov[1]<<std::endl;
+                std::cout<<"track_erro"<<output_tra_ero_str<<std::endl;
+                //ekf_innovations_out<<ekf_innovations_stream.str()<<std::endl;
 
 
                 // calculate noise filtered velocity innovations which are used for pre-flight checking

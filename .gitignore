@@ -14,3 +14,4 @@ build_*/
 EKF-build*/
 EKF/build/*
 data/data/*
+data/test/*
