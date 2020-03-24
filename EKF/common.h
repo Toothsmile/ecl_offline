@@ -206,8 +206,8 @@ struct auxVelSample {
 
 struct parameters {
 	// measurement source control
-        int32_t fusion_mode{MASK_USE_GPS+MASK_USE_EVPOS+MASK_ROTATE_EV};		///< bitmasked integer that selects which aiding sources will be used
-        int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
+        int32_t fusion_mode{MASK_USE_GPS};		///< bitmasked integer that selects which aiding sources will be used
+        int32_t vdist_sensor_type{VDIST_SENSOR_GPS};	///< selects the primary source for height data
 	int32_t sensor_interval_min_ms{20};		///< minimum time of arrival difference between non IMU sensor updates. Sets the size of the observation buffers. (mSec)
 
 	// measurement time delays
@@ -242,8 +242,8 @@ struct parameters {
 	float initial_wind_uncertainty{1.0f};	///< 1-sigma initial uncertainty in wind velocity (m/sec)
 
 	// position and velocity fusion
-        float gps_vel_noise{0.001f};		///< minimum allowed observation noise for gps velocity fusion (m/sec)
-        float gps_pos_noise{0.003f};		///< minimum allowed observation noise for gps position fusion (m)
+        float gps_vel_noise{0.03f};		///< minimum allowed observation noise for gps velocity fusion (m/sec)
+        float gps_pos_noise{0.04f};		///< minimum allowed observation noise for gps position fusion (m)
 	float pos_noaid_noise{10.0f};		///< observation noise for non-aiding position fusion (m)
         float baro_noise{2.0f};			///< observation noise for barometric height fusion (m)
 	float baro_innov_gate{5.0f};		///< barometric and GPS height innovation consistency gate size (STD)
@@ -303,7 +303,7 @@ struct parameters {
         float req_hacc{0.1f};			///< maximum acceptable horizontal position error (m)
 	float req_vacc{8.0f};			///< maximum acceptable vertical position error (m)
 	float req_sacc{1.0f};			///< maximum acceptable speed error (m/s)
-        int32_t req_nsats{15};			///< minimum acceptable satellite count
+        int32_t req_nsats{8};			///< minimum acceptable satellite count
 	float req_gdop{2.0f};			///< maximum acceptable geometric dilution of precision
 	float req_hdrift{0.3f};			///< maximum acceptable horizontal drift speed (m/s)
 	float req_vdrift{0.5f};			///< maximum acceptable vertical drift speed (m/s)

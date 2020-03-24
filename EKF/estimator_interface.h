@@ -387,6 +387,12 @@ public:
 
 	static const unsigned FILTER_UPDATE_PERIOD_MS = 8;	// ekf prediction period in milliseconds - this should ideally be an integer multiple of the IMU time delta
 
+    double get_gps_delayTime()// by sjj
+    {
+        return _params.gps_delay_ms;
+    }
+
+
 protected:
 
 	parameters _params;		// filter parameters

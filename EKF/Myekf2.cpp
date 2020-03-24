@@ -56,7 +56,7 @@ void Ekf2::print_status()
 
 void Ekf2::task_main()
 {
-    std::string filehead="/home/toothsmile/study/InaNav/9.16/03_32_39/";
+    std::string filehead="/home/toothsmile/study/ecl_offline/data/rtk_vision/test/";
     std::ifstream imuread(filehead+"imu.txt");
     std::ifstream gpsread(filehead+"gps.txt");
     std::ifstream magread(filehead+"mag.txt");
@@ -100,8 +100,8 @@ void Ekf2::task_main()
     int xy_valid,z_valid,v_xy_valid,v_z_valid;
 
 
-    //while (!_task_should_exit && !imuread.eof() && !gpsread.eof() && !magread.eof() && !airread.eof()) {
-    while (!_task_should_exit && !gpsread.eof() &&  !imuread.eof() && !airread.eof()&& !evqread.eof()&& !evpread.eof()) {
+    while (!_task_should_exit && !imuread.eof() && !gpsread.eof() && !magread.eof() && !airread.eof()) {
+    //while (!_task_should_exit && !gpsread.eof() &&  !imuread.eof() && !airread.eof()&& !evqread.eof()&& !evpread.eof()) {
 
 		bool isa = true;
 		bool mag_updated = false;
@@ -677,6 +677,9 @@ void Ekf2::task_main()
                 ekf2_innovations_s innovations;
                 innovations.timestamp = now;
                 _ekf.get_vel_pos_innov(&innovations.vel_pos_innov[0]);
+                //by sjj caluate vel rms
+                sum_n(innovations.vel_pos_innov);
+
                 _ekf.get_aux_vel_innov(&innovations.aux_vel_innov[0]);
                 _ekf.get_mag_innov(&innovations.mag_innov[0]);
                 _ekf.get_heading_innov(&innovations.heading_innov);
@@ -767,9 +770,29 @@ int main(int argc, char *argv[])
 {
     ECL_INFO("begin\n");
 	bReadGPS = true;
+    float velpos[6],tmin=0,tmax=200,t=tmin,rms=tmax,rmstmp;
 	Ekf2* _ekf2 = new Ekf2();
+    //printf("gps time delay%f ",_ekf2->get_gps_delayTime());
+    //_ekf2->set_gps_delayTime(100.0f);
     _ekf2->print_status();
-    _ekf2->task_main();
+    while(t<tmax+1)
+    {
+        _ekf2->set_vision_delayTime(t);
+        _ekf2->task_main();
+        rmstmp=_ekf2->get_velRms();
+        //rms=rms<rmstmp?rms:rmstmp;
+        printf("%f,%f\n",t,rmstmp);
+        t=t+10;
+
+    }
+    //_ekf2->task_main();
+    //_ekf2->rms();
+    //printf("velstd%f ",_ekf2->get_velRms());
+
+
+    //printf("gps time delay%f ",_ekf2->get_gps_delayTime());
+
+
 
     return 0;
 }

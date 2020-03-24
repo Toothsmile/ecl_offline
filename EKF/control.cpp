@@ -289,7 +289,7 @@ void Ekf::controlExternalVisionFusion()
 				_hpos_pred_prev(1) = _state.pos(1);
 
 			} else {
-                std::cout<<"融合视觉非里程计模式"<<std::endl;
+                //std::cout<<"融合视觉非里程计模式"<<std::endl;
                 //if(_params.fusion_mode & 'MASK_ROTATE_EV')
                     //_ev_sample_delayed.posNED = _ev_rot_mat * _ev_sample_delayed.posNED;
 				// use the absolute position

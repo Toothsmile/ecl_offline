@@ -53,9 +53,40 @@ public:
     const Vector3f get_vel_body_wind();
 
     //char* mat2Str(float *x);
+    float get_gps_delayTime()// by sjj
+    {
+        return _params->gps_delay_ms;
+    }
+    void set_gps_delayTime(float gps_delayTime)// by sjj
+    {
+        _params->gps_delay_ms=gps_delayTime;
+    }
+    float get_vision_delayTime()// by sjj
+    {
+        return _params->ev_delay_ms;
+    }
+    void set_vision_delayTime(float vision_delayTime)// by sjj
+    {
+        _params->ev_delay_ms=vision_delayTime;
+    }
 
+    void get_vel_Inovation(float velpos[6])
+    {
+
+         return _ekf.get_vel_pos_innov(&velpos[0]);
+
+    }
+    float get_velRms()
+    {
+        rms();
+        return _vel_rms;
+    }
 
 private:
+
+    float _vel_rms=0.0f;
+
+
 	static constexpr float _dt_max = 0.02;
 	bool	_task_should_exit = false;
 	int	_control_task = -1;		// task handle for task
@@ -111,7 +142,19 @@ private:
 	bool	_prev_landed = true;	// landed status from the previous frame
 
 	float _acc_hor_filt = 0.0f; 	// low-pass filtered horizontal acceleration
-
+    float _sum=0.0f;
+    int _n=0;
+    void sum_n(float velpos[6]) //by sjj
+    {
+        _sum+=velpos[3]*velpos[3]+velpos[4]*velpos[4]+velpos[5]*velpos[5];
+        _n++;
+    }
+    void rms() // by sjj
+    {
+        _vel_rms=sqrt(_sum/_n);
+        _sum=0;
+        _n=0;
+    }
 	matrix::Vector <float, 4> gps_from_API;
 	Ekf _ekf;
 
