@@ -1,9 +1,5 @@
 #include "Myekf2.h"
-#include <sstream>
-#include <fstream>
-#include <time.h>
-#include <stdio.h>
-#include<iostream>
+
 #define ECL_STANDALONE
 
 std::string num2str(float x)
@@ -60,18 +56,19 @@ void Ekf2::print_status()
 
 void Ekf2::task_main()
 {
-    std::ifstream imuread("../data/test/imu.txt");
-    std::ifstream gpsread("../data/test/gps.txt");
-    std::ifstream magread("../data/test/mag.txt");
-    std::ifstream airread("../data/test/baro.txt");
-    std::ifstream evqread("../data/test/vision_att.txt");
-    std::ifstream evpread("../data/test/vision_pos.txt");
-    std::ofstream vehicle_attitude_out("../data/test/vechile_attitude.txt");
-    std::ofstream vehicle_local_out("../data/test/vechile_local_position.txt");
-    std::ofstream vehicle_global_out("../data/test/vechile_global_position.txt");
-    std::ofstream sensor_bias_out("../data/test/sensor_bias.txt");
-    std::ofstream estimate_status_out("../data/test/estimate_status.txt");
-    std::ofstream ekf_innovations_out("../data/test/ekf_innovations.txt");
+    std::string filehead="/home/toothsmile/study/InaNav/9.16/03_32_39/";
+    std::ifstream imuread(filehead+"imu.txt");
+    std::ifstream gpsread(filehead+"gps.txt");
+    std::ifstream magread(filehead+"mag.txt");
+    std::ifstream airread(filehead+"baro.txt");
+    std::ifstream evqread(filehead+"vision_att.txt");
+    std::ifstream evpread(filehead+"vision_pos.txt");
+    std::ofstream vehicle_attitude_out(filehead+"vechile_attitude.txt");
+    std::ofstream vehicle_local_out(filehead+"vechile_local_position.txt");
+    std::ofstream vehicle_global_out(filehead+"vechile_global_position.txt");
+    std::ofstream sensor_bias_out(filehead+"sensor_bias.txt");
+    std::ofstream estimate_status_out(filehead+"estimate_status.txt");
+    std::ofstream ekf_innovations_out(filehead+"ekf_innovations.txt");
 
 	// initialise parameter cache// TODO
 	//updateParams();
@@ -104,7 +101,7 @@ void Ekf2::task_main()
 
 
     //while (!_task_should_exit && !imuread.eof() && !gpsread.eof() && !magread.eof() && !airread.eof()) {
-    while (!_task_should_exit && !imuread.eof() &&  !imuread.eof() && !airread.eof()&& !evqread.eof()&& !evpread.eof()) {
+    while (!_task_should_exit && !gpsread.eof() &&  !imuread.eof() && !airread.eof()&& !evqread.eof()&& !evpread.eof()) {
 
 		bool isa = true;
 		bool mag_updated = false;
@@ -183,7 +180,7 @@ void Ekf2::task_main()
 				float mag_sample_count_inv = 1.0f / (float)_mag_sample_count;
 				float mag_data_avg_ga[3] = {_mag_data_sum[0] *mag_sample_count_inv, _mag_data_sum[1] *mag_sample_count_inv, _mag_data_sum[2] *mag_sample_count_inv};
 				_ekf.setMagData(1000 * (uint64_t)mag_time_ms, mag_data_avg_ga);
-                printf("[mag]: %d %d %f %f %f %f\n",now,mag_time_us_read,mag_time_ms,
+                ECL_DEBUG("[mag]: %d %d %f %f %f %f\n",now,mag_time_us_read,mag_time_ms,
                         _mag_data_sum[0],_mag_data_sum[1],_mag_data_sum[2]);
 				_mag_time_ms_last_used = mag_time_ms;
 				_mag_time_sum_ms = 0;
@@ -516,17 +513,18 @@ void Ekf2::task_main()
                 lpos.hagl_max = INFINITY;
             }
             //发布vehicle_local_position数据
-            std::stringstream lposStream;//i need a printf function need neednnn
+            //std::stringstream lposStream;//i need a printf function need neednnn
             vehicle_local_out<<lpos.timestamp<<space_str<<lpos.ref_timestamp<<space_str<<lpos.ref_lat<<space_str
                      <<lpos.ref_lon<<space_str<<lpos.x<<space_str<<lpos.y<<space_str<<lpos.z<<space_str<<lpos.delta_xy[0]
                     <<space_str<<lpos.delta_xy[1]<<space_str<<lpos.delta_z<<space_str<<lpos.vx<<space_str<<lpos.vy<<space_str
-                   <<lpos.z_deriv<<space_str<<lpos.delta_vxy[0]<<space_str<<lpos.delta_vxy[2]<<space_str<<lpos.delta_vz<<space_str
-                  <<lpos.yaw<<space_str<<lpos.ref_alt<<space_str<<lpos.dist_bottom<<space_str<<lpos.dist_bottom_rate<<space_str<<lpos.eph<<space_str
-                 <<lpos.epv<<space_str<<lpos.evh<<space_str<<lpos.evv<<space_str<<lpos.vxy_max<<space_str<<lpos.hagl_min<<space_str<<lpos.hagl_max
+                   <<lpos.z_deriv<<space_str<<lpos.delta_vxy[0]<<space_str<<lpos.delta_vxy[1]<<space_str<<lpos.delta_vz<<space_str<<lpos.ax<<space_str<<lpos.ay<<space_str<<lpos.az
+                  <<space_str<<lpos.yaw<<space_str<<lpos.ref_alt<<space_str<<lpos.dist_bottom<<space_str<<lpos.dist_bottom_rate<<space_str<<lpos.eph<<space_str
+                 <<lpos.epv<<space_str<<lpos.evh<<space_str<<lpos.evv<<space_str<<lpos.vxy_max<<space_str<<lpos.hagl_min<<space_str<<lpos.hagl_max<<space_str
                 <<lpos.xy_valid<<space_str<<lpos.z_valid<<space_str<<lpos.v_xy_valid<<space_str<<lpos.v_z_valid<<space_str<<lpos.xy_reset_counter<<space_str
-               <<lpos.z_reset_counter<<space_str<<lpos.vxy_reset_counter<<space_str<<lpos.vz_reset_counter<<space_str<<lpos.xy_global<<space_str<<lpos.z_global
+               <<lpos.z_reset_counter<<space_str<<lpos.vxy_reset_counter<<space_str<<lpos.vz_reset_counter<<space_str<<lpos.xy_global<<space_str<<lpos.z_global<<space_str
               <<lpos.z_global<<space_str<<lpos.dist_bottom_valid<<space_str<<std::endl;
-
+//            std::cout<<lpos.timestamp<<space_str<<lpos.ref_timestamp<<space_str<<lpos.ref_lat<<space_str
+//                     <<lpos.ref_lon<<space_str<<lpos.x<<space_str<<lpos.y<<space_str<<lpos.z<<std::endl;
             //vehicle_local_out<<lposStream.str()<<std::endl;
             ECL_INFO("now:%ld,velocity: %f,%f,%f\n", now,velocity[0], velocity[1], velocity[2]);
             ECL_INFO("position: %lf,%lf,%lf\n", position[0], position[1], position[2]);
@@ -573,12 +571,11 @@ void Ekf2::task_main()
                 //_vehicle_global_position_pub.update();
                 //发布vehicle_global_position信息
                 //std::stringstream vehicleGlobalPosStream;
-                vehicle_local_out<<global_pos.timestamp<<space_str<<global_pos.lat<<space_str<<global_pos.lon<<space_str<<global_pos.alt
+                vehicle_global_out<<global_pos.timestamp<<space_str<<global_pos.lat<<space_str<<global_pos.lon<<space_str<<global_pos.alt
                                      <<space_str<<global_pos.delta_alt<<space_str<<global_pos.vel_n<<space_str<<global_pos.vel_e<<space_str
                                     <<global_pos.vel_d<<space_str<<global_pos.yaw<<space_str<<global_pos.eph<<space_str<<global_pos.epv<<space_str
                                    <<global_pos.terrain_alt<<space_str<<global_pos.lat_lon_reset_counter<<space_str<<global_pos.alt_reset_counter<<space_str
                                   <<global_pos.terrain_alt_valid<<space_str<<global_pos.dead_reckoning<<std::endl;
-                //vehicle_local_out<<vehicleGlobalPosStream.str()<<std::endl;
                 ECL_INFO("now:%ld time :%ld position: %lf,%lf,%lf\n", now,global_pos.timestamp,global_pos.lat, global_pos.lon, global_pos.alt);
 
 
@@ -658,7 +655,7 @@ void Ekf2::task_main()
 //                orb_publish(ORB_ID(estimator_status), _estimator_status_pub, &status);
 //            }
             //发布EKF滤波信息（主要是滤波约束条件）
-            std::stringstream ekfStatusStream;
+            //std::stringstream ekfStatusStream;
             std::string states_str=mat2Str(status.states,sizeof(status.states)/sizeof(float));//状态向量
             std::string cov_str=mat2Str(status.covariances,sizeof(status.covariances)/sizeof(float));//状态向量协方差
             estimate_status_out<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<space_str<<status.vibe[0]
@@ -668,16 +665,7 @@ void Ekf2::task_main()
                        <<space_str<<status.beta_test_ratio<<space_str<<status.time_slip<<space_str<<status.gps_check_fail_flags<<space_str<<status.filter_fault_flags
                       <<space_str<<status.innovation_check_flags<<space_str<<status.solution_status_flags<<space_str<<status.nan_flags<<space_str<<status.health_flags
                      <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail<<std::endl;
-            std::cout<<"timestamp"<<status.timestamp<<std::endl;
-            std::cout<<status.timestamp<<space_str<<states_str<<space_str<<status.n_states<<status.vibe[0]
-                    <<space_str<<status.vibe[1]<<space_str<<status.vibe[2]<<space_str<<cov_str<<space_str<<status.control_mode_flags<<space_str
-                   <<status.pos_horiz_accuracy<<space_str<<status.pos_vert_accuracy<<space_str<<status.mag_test_ratio<<space_str<<status.vel_test_ratio
-                  <<space_str<<status.pos_test_ratio<<space_str<<status.hgt_test_ratio<<space_str<<status.tas_test_ratio<<space_str<<status.hagl_test_ratio
-                 <<space_str<<status.beta_test_ratio<<space_str<<status.time_slip<<space_str<<status.gps_check_fail_flags<<space_str<<status.filter_fault_flags
-                <<space_str<<status.innovation_check_flags<<space_str<<status.solution_status_flags<<space_str<<status.nan_flags<<space_str<<status.health_flags
-               <<space_str<<status.timeout_flags<<space_str<<status.pre_flt_fail<<std::endl;
-      std::cout<<"mag"<<status.mag_test_ratio<<std::endl;
-      std::cout<<"state[24]:"<<status.states[23]<<"state_var[24]:"<<status.covariances[23]<<std::endl;
+
             //ECL_WARN("status.timestamp%d,mag_test_ratio%f，vel_test_ratio%f",status.timestamp,status.mag_test_ratio,status.vel_test_ratio);
             //ECL_WARN("control_mode_flags%d",status.control_mode_flags);
             //estimate_status_out<<ekfStatusStream.str()<<std::endl;
@@ -724,7 +712,7 @@ void Ekf2::task_main()
                                 <<space_str<<innovations.hagl_innov_var<<space_str<<output_tra_ero_str<<space_str
                                <<innovations.drag_innov[0]<<space_str<<innovations.drag_innov[1]<<space_str<<innovations.drag_innov_var[0]<<space_str<<innovations.drag_innov_var[1]
                               <<space_str<<innovations.aux_vel_innov[0]<<space_str<<innovations.aux_vel_innov[1]<<std::endl;
-                std::cout<<"track_erro"<<output_tra_ero_str<<std::endl;
+                //std::cout<<"track_erro"<<output_tra_ero_str<<std::endl;
                 //ekf_innovations_out<<ekf_innovations_stream.str()<<std::endl;
 
 

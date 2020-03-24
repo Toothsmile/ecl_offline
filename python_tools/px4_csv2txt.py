@@ -74,114 +74,129 @@ vision_att_file=file_head+"_vehicle_vision_attitude_0.csv"
 outfile_head=outputfile
 out_imu=outfile_head+'imu.txt'
 out_gps=outfile_head+'gps.txt'
+out_gps2=outfile_head+'gps2.txt'
 out_mag=outfile_head+'mag.txt'
 out_vision_pos=outfile_head+'vision_pos.txt'
 out_vision_att=outfile_head+"vision_att.txt"
 out_air=outfile_head+"baro.txt"
 #handle imu
 lines=[]
-if(os.path.exists(imu_file)):
-    lines=readfile(imu_file)
-    imu_time_first=float(lines[1].split(',')[0])
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
+
+lines=readfile(imu_file)
+imu_time_first=float(lines[1].split(',')[0])
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_imu,line2str)
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_imu,line2str)
 
 #handle gps data
-if(os.path.exists(gps_file)):
-    lines=readfile(gps_file)
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
+lines=readfile(gps_file)
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(float(strLine[0])<imu_time_first):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        if(float(strLine[0])<imu_time_first):
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_gps,line2str)
+#handle gps2 data
+lines=readfile(gps_file)
+#time_end=(lines[len(lines)-1].split(','))[0]
+for line in lines:
+    print(line)
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(int(strLine[0])>=153376210 and int(strLine[0])<=153376210+8*1e6):#从153376210开始搞10个历元无数据
+        print(strLine[0])
+        strLine[3]='0';strLine[4]='0';strLine[23]='1'        
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_gps,line2str)
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_gps2,line2str)
 
 #handle mag data
-
-if(os.path.exists(mag_file)):
-    lines=readfile(mag_file)
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
+lines=readfile(mag_file)
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    #print(strLine[0])
+    if(float(strLine[0])<imu_time_first):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        #print(strLine[0])
-        if(float(strLine[0])<imu_time_first):
-            continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_mag,line2str)
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_mag,line2str)
     
 #handle vision data
-if(os.path.exists(vision_pos_file)):
-    lines=readfile(vision_pos_file)
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
+lines=readfile(vision_pos_file)
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(float(strLine[0])<imu_time_first):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        if(float(strLine[0])<imu_time_first):
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_vision_pos,line2str)
+
+lines=readfile(vision_att_file)
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(float(strLine[0])<imu_time_first):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_vision_pos,line2str)
-if(os.path.exists(vision_att_file)):
-    lines=readfile(vision_att_file)
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
-            continue
-        if(float(strLine[0])<imu_time_first):
-            continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_vision_att,line2str)
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_vision_att,line2str)
     
 #handle baro data
-if(os.path.exists(air_file)):
-    lines=readfile(air_file)
-    for line in lines:
-        strLine=line.split(',')
-        if(strLine[0]=="timestamp"):
+lines=readfile(air_file)
+for line in lines:
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(float(strLine[0])<imu_time_first):
+        continue
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
             continue
-        if(float(strLine[0])<imu_time_first):
-            continue
-        line2str=''
-        line2str+=(strLine[0])
-        for str_data in strLine:
-            if(str_data==strLine[0]):
-                continue
-            line2str+=(' ')
-            line2str+=(str_data)   
-        outfile(out_air,line2str)   
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_air,line2str)   

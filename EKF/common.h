@@ -58,14 +58,14 @@ struct gps_message {
 	int32_t lat;		///< Latitude in 1E-7 degrees
 	int32_t lon;		///< Longitude in 1E-7 degrees
 	int32_t alt;		///< Altitude in 1E-3 meters (millimeters) above MSL
-	uint8_t fix_type;	///< 0-1: no fix, 2: 2D fix, 3: 3D fix, 4: RTCM code differential, 5: Real-Time
+        uint16_t fix_type;	///< 0-1: no fix, 2: 2D fix, 3: 3D fix, 4: RTCM code differential, 5: Real-Time
 	float eph;		///< GPS horizontal position accuracy in m
 	float epv;		///< GPS vertical position accuracy in m
 	float sacc;		///< GPS speed accuracy in m/s
 	float vel_m_s;		///< GPS ground speed (m/sec)
 	float vel_ned[3];	///< GPS ground speed NED
 	bool vel_ned_valid;	///< GPS ground speed is valid
-	uint8_t nsats;		///< number of satellites used
+        uint16_t nsats;		///< number of satellites used
 	float gdop;		///< geometric dilution of precision
 };
 
@@ -206,7 +206,7 @@ struct auxVelSample {
 
 struct parameters {
 	// measurement source control
-        int32_t fusion_mode{MASK_USE_EVPOS+MASK_USE_DRAG};		///< bitmasked integer that selects which aiding sources will be used
+        int32_t fusion_mode{MASK_USE_GPS+MASK_USE_EVPOS+MASK_ROTATE_EV};		///< bitmasked integer that selects which aiding sources will be used
         int32_t vdist_sensor_type{VDIST_SENSOR_BARO};	///< selects the primary source for height data
 	int32_t sensor_interval_min_ms{20};		///< minimum time of arrival difference between non IMU sensor updates. Sets the size of the observation buffers. (mSec)
 
@@ -215,11 +215,11 @@ struct parameters {
         ///< Maximmum time delay of any sensor used to increse buffer length to handle large timing jitter (mSec)
 	float mag_delay_ms{0.0f};		///< magnetometer measurement delay relative to the IMU (mSec)
 	float baro_delay_ms{0.0f};		///< barometer height measurement delay relative to the IMU (mSec)
-	float gps_delay_ms{110.0f};		///< GPS measurement delay relative to the IMU (mSec)
+        float gps_delay_ms{140.0f};		///< GPS measurement delay relative to the IMU (mSec)
 	float airspeed_delay_ms{100.0f};	///< airspeed measurement delay relative to the IMU (mSec)
 	float flow_delay_ms{5.0f};		///< optical flow measurement delay relative to the IMU (mSec) - this is to the middle of the optical flow integration interval
 	float range_delay_ms{5.0f};		///< range finder measurement delay relative to the IMU (mSec)
-	float ev_delay_ms{100.0f};		///< off-board vision measurement delay relative to the IMU (mSec)
+        float ev_delay_ms{140.0f};		///< off-board vision measurement delay relative to the IMU (mSec)
 	float auxvel_delay_ms{0.0f};		///< auxiliary velocity measurement delay relative to the IMU (mSec)
 
 	// input noise
@@ -242,10 +242,10 @@ struct parameters {
 	float initial_wind_uncertainty{1.0f};	///< 1-sigma initial uncertainty in wind velocity (m/sec)
 
 	// position and velocity fusion
-	float gps_vel_noise{5.0e-1f};		///< minimum allowed observation noise for gps velocity fusion (m/sec)
-	float gps_pos_noise{0.5f};		///< minimum allowed observation noise for gps position fusion (m)
+        float gps_vel_noise{0.001f};		///< minimum allowed observation noise for gps velocity fusion (m/sec)
+        float gps_pos_noise{0.003f};		///< minimum allowed observation noise for gps position fusion (m)
 	float pos_noaid_noise{10.0f};		///< observation noise for non-aiding position fusion (m)
-	float baro_noise{2.0f};			///< observation noise for barometric height fusion (m)
+        float baro_noise{2.0f};			///< observation noise for barometric height fusion (m)
 	float baro_innov_gate{5.0f};		///< barometric and GPS height innovation consistency gate size (STD)
 	float posNE_innov_gate{5.0f};		///< GPS horizontal position innovation consistency gate size (STD)
 	float vel_innov_gate{5.0f};		///< GPS velocity innovation consistency gate size (STD)
@@ -253,7 +253,7 @@ struct parameters {
 	float gnd_effect_max_hgt{0.5f};		///< Height above ground at which baro ground effect becomes insignificant (m)
 
 	// magnetometer fusion
-	float mag_heading_noise{3.0e-1f};	///< measurement noise used for simple heading fusion (rad)
+        float mag_heading_noise{2.0e-1f};	///< measurement noise used for simple heading fusion (rad)
 	float mag_noise{5.0e-2f};		///< measurement noise used for 3-axis magnetoemeter fusion (Gauss)
 	float mag_declination_deg{0.0f};	///< magnetic declination (degrees)
 	float heading_innov_gate{2.6f};		///< heading fusion innovation consistency gate size (STD)
@@ -286,7 +286,7 @@ struct parameters {
 	float range_cos_max_tilt{0.7071f};	///< cosine of the maximum tilt angle from the vertical that permits use of range finder data
 
 	// vision position fusion
-	float ev_innov_gate{5.0f};		///< vision estimator fusion innovation consistency gate size (STD)
+        float ev_innov_gate{2.0f};		///< vision estimator fusion innovation consistency gate size (STD)
         float ev_pos_noise{0.02f};               ///< by sjj extel vision pose noise
         float ev_ang_noise{0.3};                ///< by sjj extel angle pose noise (not correct)
 
@@ -300,10 +300,10 @@ struct parameters {
 	// these parameters control the strictness of GPS quality checks used to determine if the GPS is
 	// good enough to set a local origin and commence aiding
 	int32_t gps_check_mask{21};		///< bitmask used to control which GPS quality checks are used
-	float req_hacc{5.0f};			///< maximum acceptable horizontal position error (m)
+        float req_hacc{0.1f};			///< maximum acceptable horizontal position error (m)
 	float req_vacc{8.0f};			///< maximum acceptable vertical position error (m)
 	float req_sacc{1.0f};			///< maximum acceptable speed error (m/s)
-	int32_t req_nsats{6};			///< minimum acceptable satellite count
+        int32_t req_nsats{15};			///< minimum acceptable satellite count
 	float req_gdop{2.0f};			///< maximum acceptable geometric dilution of precision
 	float req_hdrift{0.3f};			///< maximum acceptable horizontal drift speed (m/s)
 	float req_vdrift{0.5f};			///< maximum acceptable vertical drift speed (m/s)

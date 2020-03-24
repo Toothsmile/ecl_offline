@@ -64,7 +64,7 @@ mkdir(outputfile)
 #file_head="03_19_48_vision_rtk_fuse"
 file_head=inputfile
 imu_file=file_head+"_sensor_combined_0.csv"
-gps_file=file_head+"_vehicle_gps_position_0.csv"
+gps_file=file_head+"_vehicle_gps2_position_0.csv"
 air_file=file_head+"_vehicle_air_data_0.csv"
 mag_file=file_head+"_vehicle_magnetometer_0.csv"
 vision_pos_file=file_head+"_vehicle_vision_position_0.csv"
@@ -74,6 +74,7 @@ vision_att_file=file_head+"_vehicle_vision_attitude_0.csv"
 outfile_head=outputfile
 out_imu=outfile_head+'imu.txt'
 out_gps=outfile_head+'gps.txt'
+out_gps2=outfile_head+'gps2.txt'
 out_mag=outfile_head+'mag.txt'
 out_vision_pos=outfile_head+'vision_pos.txt'
 out_vision_att=outfile_head+"vision_att.txt"
@@ -112,6 +113,25 @@ for line in lines:
         line2str+=(' ')
         line2str+=(str_data)   
     outfile(out_gps,line2str)
+#handle gps2 data
+lines=readfile(gps_file)
+#time_end=(lines[len(lines)-1].split(','))[0]
+for line in lines:
+    print(line)
+    strLine=line.split(',')
+    if(strLine[0]=="timestamp"):
+        continue
+    if(int(strLine[0])>=153376210 and int(strLine[0])<=153376210+8*1e6):#从153376210开始搞10个历元无数据
+        print(strLine[0])
+        strLine[3]='0';strLine[4]='0';strLine[23]='1'        
+    line2str=''
+    line2str+=(strLine[0])
+    for str_data in strLine:
+        if(str_data==strLine[0]):
+            continue
+        line2str+=(' ')
+        line2str+=(str_data)   
+    outfile(out_gps2,line2str)
 
 #handle mag data
 lines=readfile(mag_file)

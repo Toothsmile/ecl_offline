@@ -151,7 +151,7 @@ void Ekf::controlExternalVisionFusion()
 
 		// if the ev data is not in a NED reference frame, then the transformation between EV and EKF navigation frames
 		// needs to be calculated and the observations rotated into the EKF frame of reference
-		if ((_params.fusion_mode & MASK_ROTATE_EV) && (_params.fusion_mode & MASK_USE_EVPOS) && !_control_status.flags.ev_yaw) {
+        if ((_params.fusion_mode & MASK_ROTATE_EV) && (_params.fusion_mode & MASK_USE_EVPOS) && !_control_status.flags.ev_yaw) {
 			// rotate EV measurements into the EKF Navigation frame
 			calcExtVisRotMat();
 		}
@@ -273,7 +273,7 @@ void Ekf::controlExternalVisionFusion()
 					Vector3f ev_delta_pos = _ev_sample_delayed.posNED - _pos_meas_prev;
 
 					// rotate measurement into body frame if required
-					if (_params.fusion_mode & MASK_ROTATE_EV) {
+                    if (_params.fusion_mode & MASK_ROTATE_EV) {
 						ev_delta_pos = _ev_rot_mat * ev_delta_pos;
 					}
 
@@ -289,8 +289,11 @@ void Ekf::controlExternalVisionFusion()
 				_hpos_pred_prev(1) = _state.pos(1);
 
 			} else {
+                std::cout<<"融合视觉非里程计模式"<<std::endl;
+                //if(_params.fusion_mode & 'MASK_ROTATE_EV')
+                    //_ev_sample_delayed.posNED = _ev_rot_mat * _ev_sample_delayed.posNED;
 				// use the absolute position
-				_vel_pos_innov[3] = _state.pos(0) - _ev_sample_delayed.posNED(0);
+                _vel_pos_innov[3] = _state.pos(0) - _ev_sample_delayed.posNED(0);
 				_vel_pos_innov[4] = _state.pos(1) - _ev_sample_delayed.posNED(1);
 
 				// check if we have been deadreckoning too long
@@ -477,8 +480,10 @@ void Ekf::controlGpsFusion()
 
 		// Determine if we should use GPS aiding for velocity and horizontal position
 		// To start using GPS we need angular alignment completed, the local NED origin set and GPS data that has not failed checks recently
-		bool gps_checks_passing = (_time_last_imu - _last_gps_fail_us > (uint64_t)5e6);
-		bool gps_checks_failing = (_time_last_imu - _last_gps_pass_us > (uint64_t)5e6);
+        bool gps_checks_passing = (_time_last_imu - _last_gps_fail_us > (uint64_t)5e6);
+        bool gps_checks_failing = (_time_last_imu - _last_gps_pass_us > (uint64_t)5e6);
+//        bool gps_checks_passing = (_time_last_imu - _last_gps_fail_us > (uint64_t)2e6);
+//        bool gps_checks_failing = (_time_last_imu - _last_gps_pass_us > (uint64_t)5e5);
 		if ((_params.fusion_mode & MASK_USE_GPS) && !_control_status.flags.gps) {
 			if (_control_status.flags.tilt_align && _NED_origin_initialised && gps_checks_passing) {
 				// If the heading is not aligned, reset the yaw and magnetic field states

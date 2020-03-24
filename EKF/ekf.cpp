@@ -78,6 +78,7 @@ bool Ekf::init(uint64_t timestamp)
 	_q_down_sampled(3) = 0.0f;
 
 	_imu_updated = false;
+
 	_NED_origin_initialised = false;
 	_gps_speed_valid = false;
 
@@ -104,7 +105,7 @@ bool Ekf::init(uint64_t timestamp)
 bool Ekf::update()
 {
 	if (!_filter_initialised) {
-		_filter_initialised = initialiseFilter();
+        _filter_initialised = initialiseFilter();//初始中用到了1阶低通滤波器
 
 		if (!_filter_initialised) {
 			return false;

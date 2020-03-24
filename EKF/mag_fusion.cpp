@@ -437,7 +437,7 @@ void Ekf::fuseHeading()
 	Vector3f mag_earth_pred;
 	float measured_hdg;
 
-	// determine if a 321 or 312 Euler sequence is best
+    // determine if a 321 or 312 Euler sequence is best 防止万向锁
 	if (fabsf(_R_to_earth(2, 0)) < fabsf(_R_to_earth(2, 1))) {
 		// calculate observation jacobian when we are observing the first rotation in a 321 sequence
 		float t9 = q0*q3;

@@ -39,7 +39,7 @@
  * @author Paul Riseborough <p_riseborough@live.com.au>
  *
  */
-
+#include "iostream" // by sjj for debug
 #include "estimator_interface.h"
 
 class Ekf : public EstimatorInterface

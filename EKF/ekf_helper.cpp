@@ -707,6 +707,8 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 		// reset the rotation from the EV to EKF frame of reference if it is being used
 		if ((_params.fusion_mode & MASK_ROTATE_EV) && (_params.fusion_mode & MASK_USE_EVPOS) && !_control_status.flags.ev_yaw) {
 			resetExtVisRotMat();
+            ECL_WARN("reset EV ROt MAT");
+
 		}
 
 		// update the yaw angle variance using the variance of the measurement
@@ -1542,8 +1544,14 @@ void Ekf::calcExtVisRotMat()
 	Quatf quat_inv = _ev_sample_delayed.quat.inversed();
 	Quatf q_error =   quat_inv * _state.quat_nominal;
 	q_error.normalize();
+    matrix::Eulerf ev_quat(_ev_sample_delayed.quat);
+    matrix::Eulerf euler_q_change(q_error);
+    matrix::Eulerf euler_state_q(_state.quat_nominal);
+    //std::cout<<"roll:"<<euler_q_change(0)*180/M_PI<<"pitch:"<<euler_q_change(1)*180/M_PI<<"yaw:"<<euler_q_change(2)*180/M_PI<<std::endl;
+    //std::cout<<"roll_q_state:"<<euler_state_q(0)*180/M_PI<<"pitch:"<<euler_state_q(1)*180/M_PI<<"yaw:"<<euler_state_q(2)*180/M_PI<<std::endl;
+    //std::cout<<"roll_ev:"<<ev_quat(0)*180/M_PI<<"pitch:"<<ev_quat(1)*180/M_PI<<"yaw:"<<ev_quat(2)*180/M_PI<<std::endl;
 
-	// convert to a delta angle and apply a spike and low pass filter
+    // convert to a delta angle and apply a spike and low pass filter
 	Vector3f rot_vec = q_error.to_axis_angle();
 
 	float rot_vec_norm = rot_vec.norm();
@@ -1567,7 +1575,7 @@ void Ekf::calcExtVisRotMat()
 	}
 
 	// convert filtered vector to a quaternion and then to a rotation matrix
-	q_error.from_axis_angle(_ev_rot_vec_filt);
+    q_error.from_axis_angle(_ev_rot_vec_filt);
 	_ev_rot_mat = quat_to_invrotmat(q_error);
 
 }

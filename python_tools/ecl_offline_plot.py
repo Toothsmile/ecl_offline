@@ -75,7 +75,7 @@ for line in lines:
     output_tracking_error_2.append(float(strLine[33]));
 pp = PdfPages(output_plot_filename)
 # generate max, min and 1-std metadata
-plt.figure(1, figsize=(20, 13))
+    plt.figure(1, figsize=(20, 13))
 # generate metadata for velocity innovationsinnov_2_max_arg = np.argmax(vel_pos2)
 innov_2_max_arg = np.argmax(vel_pos2)
 innov_2_max_time = timestamp_innov[innov_2_max_arg]
